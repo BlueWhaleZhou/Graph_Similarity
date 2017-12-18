@@ -83,7 +83,7 @@ for i1 = 1:l2_new
                 score_t = GS_RW_Plain(A, B_tmp);
                 score = score_t(1);
                 score_matrix(i1 + l1, j + l1) = score - sim_0;
-                score_matrix(j + l1, i1 + l1) = score - sim_0;
+                score_matrix(i1 + l1 j + l1) = score - sim_0;
             end
         else
             if i1 ~= j
@@ -93,7 +93,6 @@ for i1 = 1:l2_new
                 score_t = GS_RW_Plain(A, B_tmp);
                 score = score_t(1);
                 score_matrix(i1 + l1, j + l1) = score - sim_0;
-                score_matrix(j + l1, i1 + l1) = score - sim_0;
             end
         end
     end
