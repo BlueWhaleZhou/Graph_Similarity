@@ -33,19 +33,19 @@ stop_x = kron(stop1, stop2);
 k_product = kron(A, B);
 inv_part = inv(eye(l1 * l2) - lamda_new * k_product);
 
-if mod(l1, 2) == 1
-    l1_new = floor(l1 / 2) + 1;
-else
-    l1_new = l1 / 2;
-end
+%if mod(l1, 2) == 1
+%    l1_new = floor(l1 / 2) + 1;
+%else
+%    l1_new = l1 / 2;
+%end
 
-if mod(l2, 2) == 1
-    l2_new = floor(l2 / 2) + 1;
-else
-    l2_new = l2 / 2;
-end
+%if mod(l2, 2) == 1
+%    l2_new = floor(l2 / 2) + 1;
+%else
+%    l2_new = l2 / 2;
+%end
 
-for i2 = 1:l1_new
+for i2 = 1:l1
     for j = 1:l1
         A_tmp = A;
         if A(i2, j) == 0
@@ -72,7 +72,7 @@ for i2 = 1:l1_new
     end
 end
 
-for i1 = 1:l2_new
+for i1 = 1:l2
     for j = 1:l2
         B_tmp = B;
         if B(i1, j) == 0
