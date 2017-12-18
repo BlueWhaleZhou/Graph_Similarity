@@ -5,15 +5,20 @@ l2 = size(B, 1);
 N = l1 + l2;
 score_matrix = zeros(N, N);
 sim_derivation = zeros(N, N);
-%A_norm = normalize(A);
-%B_norm = normalize(B);
-%disp(A_norm);
-%disp(B_norm);
+[A_norm_1, A_norm_2] = normalize(A);
+[B_norm_1, B_norm_2] = normalize(B);
+disp(A_norm_1);
+disp(A_norm_2);
+disp(B_norm_1);
+disp(B_norm_2);
 sim_0_t = GS_RW_Plain(A, B);
-%temp = GS_RW_Plain(A, B);
-disp("no normalization: " + temp(1));
+temp1 = GS_RW_Plain(A_norm_1, B_norm_1);
+disp("after normalization1: " + temp1(1));
+temp2 = GS_RW_Plain(A_norm_2, B_norm_2);
+disp("after normalization2: " + temp2(1));
+
 sim_0 = sim_0_t(1);%result of direct inverse random walk
-disp("after normalization " + sim_0);
+disp("no normalization " + sim_0);
  
 %derivation part
 lamda1 = eigs(A, 1, 'lm');
@@ -172,7 +177,7 @@ if flag(4)==1%eigen-decomposition, for symmetric matrix only
 end    
 end
 
-function norm_matrix = normalize(A)
+function [norm_matrix_1, norm_matrix_2] = normalize(A)
 
 length = size(A, 1);
 D = zeros(length, length);
@@ -185,5 +190,6 @@ for i = 1:length
     D(i, i) = deg;
 end%degree matrix 1
 
-norm_matrix = D^(-1) * A;
+norm_matrix_1 = A * D^(-1);
+norm_matrix_2 = D^(-1) * A;
 end
