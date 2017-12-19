@@ -1,20 +1,21 @@
 function [score_matrix, sim_derivation]= Score_Cal(A, B)
 l1 = size(A, 1);
 l2 = size(B, 1);
-disp(floor(5/2));
+
 N = l1 + l2;
 score_matrix = zeros(N, N);
 sim_derivation = zeros(N, N);
 %[A_norm_1, A_norm_2] = normalize(A);
 %[B_norm_1, B_norm_2] = normalize(B);
-sim_0_t = GS_RW_Plain(A, B);
+%sim_0_t = GS_RW_Plain(A, B);
+sim_0_t_norm = norm_kernel(A, B);%cosine similarity/graph kernel
 %temp1 = GS_RW_Plain(A_norm_1, B_norm_1);
 %disp("after normalization1: " + temp1(1));
 %temp2 = GS_RW_Plain(A_norm_2, B_norm_2);
 %disp("after normalization2: " + temp2(1));
 
-sim_0 = sim_0_t(1);%result of direct inverse random walk
-disp("no normalization " + sim_0);
+%sim_0 = sim_0_t(1);%result of direct inverse random walk
+%disp("no normalization " + sim_0);
  
 %derivation part
 lamda1 = eigs(A, 1, 'lm');
@@ -48,26 +49,33 @@ inv_part = inv(eye(l1 * l2) - lamda_new * k_product);
 for i2 = 1:l1
     for j = 1:l1
         A_tmp = A;
-        %if A(i2, j) == 0
-        %    if i2 ~= j
-        %        A_tmp(i2, j) = 1;%0 -> 0.01
-        %        A_tmp(j, i2) = 1;
+        if A(i2, j) == 0
+            if i2 ~= j
+                A_tmp(i2, j) = 1;%0 -> 0.01
+                A_tmp(j, i2) = 1;
+                score_normalized = norm_kernel(A_tmp, B);
+                score_matrix(i2, j) = score_normalized - sim_0_t_norm;
+                score_matrix(j, i2) = score_normalized - sim_0_t_norm;
         %        %A_tmp_norm = normalize(A_tmp);
         %        score_t = GS_RW_Plain(A_tmp, B);
         %        score = score_t(1);
         %        score_matrix(i2, j) = score - sim_0;
         %        score_matrix(j, i2) = score - sim_0;
-        %    end
+            end
+        end
         %else
         if A(i2, j) == 1
             if i2 ~= j
                 A_tmp(i2, j) = 0;% 1 -> 0.99
                 A_tmp(j, i2) = 0;
+                score_normalized = norm_kernel(A_tmp, B);
+                score_matrix(i2, j) = score_normalized - sim_0_t_norm;
+                score_matrix(j, i2) = score_normalized - sim_0_t_norm;
                 %A_tmp_norm = normalize(A_tmp);
-                score_t = GS_RW_Plain(A_tmp, B);
-                score = score_t(1);
-                score_matrix(i2, j) = score - sim_0;
-                score_matrix(j, i2) = score - sim_0;
+                %score_t = GS_RW_Plain(A_tmp, B);
+                %score = score_t(1);
+                %score_matrix(i2, j) = score - sim_0;
+                %score_matrix(j, i2) = score - sim_0;
             end
         end
     end
@@ -76,26 +84,33 @@ end
 for i1 = 1:l2
     for j = 1:l2
         B_tmp = B;
-        %if B(i1, j) == 0
-        %    if i1 ~= j
-        %        B_tmp(i1, j) = 0.1; % 0 -> 0.01
-        %        B_tmp(j, i1) = 0.1;
+        if B(i1, j) == 0
+            if i1 ~= j
+                B_tmp(i1, j) = 1; % 0 -> 0.01
+                B_tmp(j, i1) = 1;
+                score_normalize = norm_kernel(A, B_tmp);
+                score_matrix(i1 + l1, j + l1) = score_normalize - sim_0_t_norm;
+                score_matrix(j + l1, i1 + l1) = score_normalize - sim_0_t_norm;
         %        %B_tmp_norm = normalize(B_tmp);
         %        score_t = GS_RW_Plain(A, B_tmp);
         %        score = score_t(1);
         %        score_matrix(i1 + l1, j + l1) = score - sim_0;
         %        score_matrix(j + l1, i1 + l1) = score - sim_0;
-        %    end
+            end
+        end
         %else
         if B(i1, j) == 1
             if i1 ~= j
                 B_tmp(i1, j) = 0; % 1 -> 0.99
                 B_tmp(j, i1) = 0;
+                score_normalize = norm_kernel(A, B_tmp);
+                score_matrix(i1 + l1, j + l1) = score_normalize - sim_0_t_norm;
+                score_matrix(j + l1, i1 + l1) = score_normalize - sim_0_t_norm;
                 %B_tmp_norm = normalize(B_tmp);
-                score_t = GS_RW_Plain(A, B_tmp);
-                score = score_t(1);
-                score_matrix(i1 + l1, j + l1) = score - sim_0;
-                score_matrix(j + l1, i1 + l1) = score - sim_0;
+                %score_t = GS_RW_Plain(A, B_tmp);
+                %score = score_t(1);
+                %score_matrix(i1 + l1, j + l1) = score - sim_0;
+                %score_matrix(j + l1, i1 + l1) = score - sim_0;
             end
         end
     end
@@ -126,7 +141,15 @@ for row_no = 1:l2
     end
 end
 end
-
+function norm_value = norm_kernel(A, B)
+    A_B = GS_RW_Plain(A, B);
+    A_B_1 = A_B(1);
+    A_A = GS_RW_Plain(A, A);
+    A_A_1 = A_A(1);
+    B_B = GS_RW_Plain(B, B);
+    B_B_1 = B_B(1);
+    norm_value = A_B_1/(sqrt(A_A_1) * sqrt(B_B_1));
+end
 function sim = GS_RW_Plain(A,B,c,flag,p,q)
 % % % % using random walk kernel to compute the similarity between A & B
 n1 = size(A,1);
