@@ -33,19 +33,19 @@ stop_x = kron(stop1, stop2);
 k_product = kron(A, B);
 inv_part = inv(eye(l1 * l2) - lamda_new * k_product);
 
-if mod(l1, 2) == 1
-    l1_new = floor(l1 / 2) + 1;
-else
-    l1_new = l1 / 2;
-end
+%if mod(l1, 2) == 1
+%    l1_new = floor(l1 / 2) + 1;
+%else
+%    l1_new = l1 / 2;
+%end
 
-if mod(l2, 2) == 1
-    l2_new = floor(l2 / 2) + 1;
-else
-    l2_new = l2 / 2;
-end
+%if mod(l2, 2) == 1
+%    l2_new = floor(l2 / 2) + 1;
+%else
+%    l2_new = l2 / 2;
+%end
 
-for i2 = 1:l1_new
+for i2 = 1:l1
     for j = 1:l1
         A_tmp = A;
         if A(i2, j) == 0
@@ -72,27 +72,28 @@ for i2 = 1:l1_new
     end
 end
 
-for i1 = 1:l2_new
+for i1 = 1:l2
     for j = 1:l2
         B_tmp = B;
         if B(i1, j) == 0
             if i1 ~= j
-                B_tmp(i1, j) = 1; % 0 -> 0.01
-                B_tmp(j, i1) = 1;
+                B_tmp(i1, j) = 0.1; % 0 -> 0.01
+                B_tmp(j, i1) = 0.1;
                 %B_tmp_norm = normalize(B_tmp);
                 score_t = GS_RW_Plain(A, B_tmp);
                 score = score_t(1);
                 score_matrix(i1 + l1, j + l1) = score - sim_0;
-                score_matrix(i1 + l1 j + l1) = score - sim_0;
+                score_matrix(j + l1, i1 + l1) = score - sim_0;
             end
         else
             if i1 ~= j
-                B_tmp(i1, j) = 0; % 1 -> 0.99
-                B_tmp(j, i1) = 0;
+                B_tmp(i1, j) = 0.9; % 1 -> 0.99
+                B_tmp(j, i1) = 0.9;
                 %B_tmp_norm = normalize(B_tmp);
                 score_t = GS_RW_Plain(A, B_tmp);
                 score = score_t(1);
                 score_matrix(i1 + l1, j + l1) = score - sim_0;
+                score_matrix(j + l1, i1 + l1) = score - sim_0;
             end
         end
     end

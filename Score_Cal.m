@@ -48,17 +48,18 @@ inv_part = inv(eye(l1 * l2) - lamda_new * k_product);
 for i2 = 1:l1
     for j = 1:l1
         A_tmp = A;
-        if A(i2, j) == 0
-            if i2 ~= j
-                A_tmp(i2, j) = 1;%0 -> 0.01
-                A_tmp(j, i2) = 1;
-                %A_tmp_norm = normalize(A_tmp);
-                score_t = GS_RW_Plain(A_tmp, B);
-                score = score_t(1);
-                score_matrix(i2, j) = score - sim_0;
-                score_matrix(j, i2) = score - sim_0;
-            end
-        else
+        %if A(i2, j) == 0
+        %    if i2 ~= j
+        %        A_tmp(i2, j) = 1;%0 -> 0.01
+        %        A_tmp(j, i2) = 1;
+        %        %A_tmp_norm = normalize(A_tmp);
+        %        score_t = GS_RW_Plain(A_tmp, B);
+        %        score = score_t(1);
+        %        score_matrix(i2, j) = score - sim_0;
+        %        score_matrix(j, i2) = score - sim_0;
+        %    end
+        %else
+        if A(i2, j) == 1
             if i2 ~= j
                 A_tmp(i2, j) = 0;% 1 -> 0.99
                 A_tmp(j, i2) = 0;
@@ -75,17 +76,18 @@ end
 for i1 = 1:l2
     for j = 1:l2
         B_tmp = B;
-        if B(i1, j) == 0
-            if i1 ~= j
-                B_tmp(i1, j) = 1; % 0 -> 0.01
-                B_tmp(j, i1) = 1;
-                %B_tmp_norm = normalize(B_tmp);
-                score_t = GS_RW_Plain(A, B_tmp);
-                score = score_t(1);
-                score_matrix(i1 + l1, j + l1) = score - sim_0;
-                score_matrix(j + l1, i1 + l1) = score - sim_0;
-            end
-        else
+        %if B(i1, j) == 0
+        %    if i1 ~= j
+        %        B_tmp(i1, j) = 0.1; % 0 -> 0.01
+        %        B_tmp(j, i1) = 0.1;
+        %        %B_tmp_norm = normalize(B_tmp);
+        %        score_t = GS_RW_Plain(A, B_tmp);
+        %        score = score_t(1);
+        %        score_matrix(i1 + l1, j + l1) = score - sim_0;
+        %        score_matrix(j + l1, i1 + l1) = score - sim_0;
+        %    end
+        %else
+        if B(i1, j) == 1
             if i1 ~= j
                 B_tmp(i1, j) = 0; % 1 -> 0.99
                 B_tmp(j, i1) = 0;
