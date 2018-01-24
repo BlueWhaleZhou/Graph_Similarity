@@ -1,4 +1,7 @@
 function [score_matrix, sim_derivation]= Score_Cal(A, B)
+
+
+
 l1 = size(A, 1);
 l2 = size(B, 1);
 
@@ -45,6 +48,7 @@ inv_part = inv(eye(l1 * l2) - lamda_new * k_product);
 %else
 %    l2_new = l2 / 2;
 %end
+t0 = cputime;
 
 for i2 = 1:l1
     for j = 1:l1
@@ -115,7 +119,9 @@ for i1 = 1:l2
         end
     end
 end
+disp("score processing time is " + (cputime -t0));
 
+t1 = cputime;
 for row_no = 1:l1
     for col_no = 1:l1
         if row_no ~= col_no
@@ -140,6 +146,9 @@ for row_no = 1:l2
         end
     end
 end
+
+disp("deirvative processing time is " + (cputime - t1));
+
 end
 function norm_value = norm_kernel(A, B)
     A_B = GS_RW_Plain(A, B);
