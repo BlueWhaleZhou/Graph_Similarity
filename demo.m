@@ -32,13 +32,13 @@ display 'Using TEAMREP-BASIC after pruning, the top five candidates are:';
 fprintf('%s \n', authorDict{top5});
 
 
-score = label_fast_exact(aa,L,currentTeam,i0,true);
-top5 = topfive(score);
-display 'Using TEAMREP-FAST-EXACT, the top five candidates are:';
-fprintf('%s \n', authorDict{top5});
+%score = label_fast_exact(aa,L,currentTeam,i0,true);
+%top5 = topfive(score);
+%display 'Using TEAMREP-FAST-EXACT, the top five candidates are:';
+%fprintf('%s \n', authorDict{top5});
 
 
-score = label_fast_approx(aa,L,currentTeam,i0,true,2);
-top5 = topfive(score);
-display 'Using TEAMREP-FAST-APPROX, the top five candidates are:';
-fprintf('%s \n', authorDict{top5});
+%score = label_fast_approx(aa,L,currentTeam,i0,true,2);
+%top5 = topfive(score);
+%display 'Using TEAMREP-FAST-APPROX, the top five candidates are:';
+%fprintf('%s \n', authorDict{top5});

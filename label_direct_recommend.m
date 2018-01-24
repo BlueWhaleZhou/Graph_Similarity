@@ -13,8 +13,6 @@ function score = label_direct_recommend(aa,L,currentTeam,i0,prune)
 %output:
 %score: each row is a score and its candidate id, note it's not sorted
 
-%Author: Liangyue Li (Arizona State University)
-
 if nargin < 4
     prune = false;
 end
@@ -88,3 +86,10 @@ function sim = label_gs(A,B,L,c)
     px = kron(p1,p2);
     sim = qx' * inv(eye(n1 * n2) - c * L * X) * L * px;
 end
+
+%function sim_der = (A, B, L, c)
+%graph kernel influcial score computation
+%
+%
+%
+%end
