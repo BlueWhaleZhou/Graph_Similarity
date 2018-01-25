@@ -10,8 +10,7 @@ Author: Liangyue Li (Arizona State University)
 
 load DBLP;
 
-%smola 
-currentTeam = [916232, 250177, 219532, 545532, 756929]; %paper index
+smola: currentTeam = [916232, 250177, 219532, 545532, 756929]; %paper index
 i0= 250177;
 
 %hinton1: 
@@ -36,7 +35,7 @@ fprintf('We need to replace %s ...\n', authorDict{i0});
 
 [score, edge_weight_matrix] = label_direct_recommend(aa,L,currentTeam,i0,true);
 top10 = topten(score);
-display 'Using TEAMREP-BASIC after pruning, the top ten candidates are:';
+display 'Using TEAMREP-BASIC after pruning, the top five candidates are:';
 fprintf('%s \n', authorDict{top10});
 
 

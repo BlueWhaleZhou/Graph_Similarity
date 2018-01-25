@@ -17,8 +17,53 @@ if nargin < 4
     prune = false;
 end
 
+fileID=fopen('authorDict.txt');
+authorDict=textscan(fileID,'%s','delimiter','\n');
+authorDict=authorDict{1};
+
+%old team adjacency matrix
+%disp(size(aa));
+l1 = length(currentTeam);
+old_team_new = zeros([l1, l1]);
+old_team = aa(currentTeam, currentTeam);
+
+old_team =(triu(old_team, 1) + tril(old_team, -1));
+
+for i = 1:l1
+    for j = 1:l1
+        old_team_new(i, j) = old_team(i, j);
+    end
+end
+
+s = [];
+t = [];
+weights = [];
+for i = 1:l1
+    for j = i+1:l1
+        s = [s, i];
+        t = [t, j];
+        weights = [weights, old_team_new(i, j)];
+    end
+end
+
+disp(s);
+disp(t);
+disp(weights);
+disp(old_team_new);
+%plot old team
+disp("print old_team graph...");
+name_old = strings([1, l1]);
+    %node name
+for i = 1:length(currentTeam)
+    name_old(i) = string(authorDict{currentTeam(i)});
+end
+name_old = cellstr(name_old);
+G = graph(s, t, weights, name_old);
+LWidths = 5 * G.Edges.Weight / max(G.Edges.Weight);
+plot(G, 'EdgeLabel', G.Edges.Weight, 'LineWidth', LWidths);
+
 n=size(aa,1);
-remainTeam = setdiff(currentTeam,i0); %i0 is the index of author to be replaced
+remainTeam = setdiff(currentTeam,i0,'stable'); %i0 is the index of author to be replaced
 currentTeam = [remainTeam, i0];
 %disp(currentTeam);
 %disp("check point 1");
@@ -26,7 +71,8 @@ currentTeam = [remainTeam, i0];
 A1 = aa(currentTeam,currentTeam);
 A1 = (triu(A1,1) + tril(A1,-1));  % remove diagonal elements
 
-cand = setdiff((1:n),currentTeam); % this is the set of candidates after removing current team members
+
+cand = setdiff((1:n),currentTeam,'stable'); % this is the set of candidates after removing current team members
 
 % prune those unpromising candidates
 if prune == true
@@ -36,8 +82,15 @@ if prune == true
     %save('aa_sum_filtered.mat', 'summ', 'cand', 'index');
 end
 
+%plot current team
+%G = graph(A1);
+%name_A1 = strings([1, length(A1)]);
+%for i = 1:length(current)
+%    name_A1(i) = string(authorDict{cand(i)});
+%end
+
 % decay factor in RWR, set it so that it converges
-c=0.00000001;
+c=0.001;
 
 % number of skills
 dn=length(L);
