@@ -26,10 +26,10 @@ authorDict=authorDict{1};
 
 fprintf('We need to replace %s ...\n', authorDict{i0});
 
-score = label_direct_recommend(aa,L,currentTeam,i0,true);
-top5 = topfive(score);
+[score, edge_weight_matrix] = label_direct_recommend(aa,L,currentTeam,i0,true);
+top10 = topten(score);
 display 'Using TEAMREP-BASIC after pruning, the top five candidates are:';
-fprintf('%s \n', authorDict{top5});
+fprintf('%s \n', authorDict{top10});
 
 
 %score = label_fast_exact(aa,L,currentTeam,i0,true);

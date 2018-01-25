@@ -1,4 +1,4 @@
-function score = label_direct_recommend(aa,L,currentTeam,i0,prune)
+function [score, edge_weight_matrix] = label_direct_recommend(aa,L,currentTeam,i0,prune)
 %The proposed TEAMREP-BASIC algorithm
 %input:
 %aa: the whole social network, e.g., author-author network, size nxn
@@ -27,15 +27,13 @@ A1 = aa(currentTeam,currentTeam);
 A1 = (triu(A1,1) + tril(A1,-1));  % remove diagonal elements
 
 cand = setdiff((1:n),currentTeam); % this is the set of candidates after removing current team members
-%disp(cand);
-%disp("cand print");
+
 % prune those unpromising candidates
 if prune == true
     cand = cand(sum(aa(cand,remainTeam),2)>0);
-    summ = sum(aa(cand,remainTeam),2);
-    disp(max(summ));
-    index = sum(aa(cand,remainTeam),2)>0; 
-    save('aa_sum_filtered.mat', 'summ', 'cand', 'index');
+    %summ = sum(aa(cand,remainTeam),2);
+    %index = sum(aa(cand,remainTeam),2)>0; 
+    %save('aa_sum_filtered.mat', 'summ', 'cand', 'index');
 end
 
 % decay factor in RWR, set it so that it converges
@@ -44,8 +42,8 @@ c=0.00000001;
 % number of skills
 dn=length(L);
 
-
 score = zeros(length(cand), 2);
+edge_weight_matrix = zeros(length(cand), length(currentTeam));
 
 for i=1:length(cand)
     newTeam = [remainTeam,cand(i)];
@@ -55,9 +53,14 @@ for i=1:length(cand)
     end
     A2 = aa(newTeam,newTeam);
     A2 = (triu(A2,1) + tril(A2,-1));
-   
+    
     score(i,1) = label_gs(A1,A2,LL,c);
     score(i,2) = cand(i);
+    edge_weight_matrix(i, length(A2)) = cand(i);
+    sim_der = inf_cal(A1,A2,LL,c);
+    disp("sim_der size");
+    disp(size(sim_der));
+    edge_weight_matrix(i, 1:(length(A2)-1)) = sim_der; 
 end
 
 end
@@ -87,9 +90,29 @@ function sim = label_gs(A,B,L,c)
     sim = qx' * inv(eye(n1 * n2) - c * L * X) * L * px;
 end
 
-function sim_der = (A, B, L, c)
 %graph kernel influcial score computation
-%
-%
-%
+function sim_der = inf_cal(A, B, L, c)
+    n1 = size(A, 1);
+    n2 = size(B,1);
+    sim_der = zeros(n2 - 1);
+    q = {ones(n1,1)/n1,ones(n2,1)/n2};
+    p = {ones(n1,1)/n1,ones(n2,1)/n2};
+    p1 = p{1};
+    p2 = p{2};
+    q1 = q{1};
+    q2 = q{2};
+    qx = kron(q1, q2);
+    px = kron(p1, p2);
+    Wx = kron(A, B);
+    inv_part = inv(eye(n1 * n2) - c * L * Wx);
+    first_part = qx' * inv_part * c * L;
+    second_part = inv_part * L * px;
+    for i = 1 : (n2 - 1)
+        tmp = zeros(n2, n2);
+        tmp(n2, i) = 1;
+        tmp(i, n2) = 1;
+        core = kron(A, tmp);
+        sim_der(i) = first_part * core * second_part;
+    end
+    %disp("sim_der size " + size(sim_der));
 end
