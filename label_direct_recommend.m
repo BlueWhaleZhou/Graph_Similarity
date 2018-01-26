@@ -1,4 +1,4 @@
-function [score, edge_weight_matrix] = label_direct_recommend(aa,L,currentTeam,i0,prune)
+function [score, edge_weight_matrix, result_max] = label_direct_recommend(aa,L,currentTeam,i0,prune)
 %The proposed TEAMREP-BASIC algorithm
 %input:
 %aa: the whole social network, e.g., author-author network, size nxn
@@ -51,7 +51,6 @@ disp(t);
 disp(weights);
 disp(old_team_new);
 %plot old team
-disp("print old_team graph...");
 name_old = strings([1, l1]);
     %node name
 for i = 1:length(currentTeam)
@@ -65,8 +64,6 @@ plot(G, 'EdgeLabel', G.Edges.Weight, 'LineWidth', LWidths);
 n=size(aa,1);
 remainTeam = setdiff(currentTeam,i0,'stable'); %i0 is the index of author to be replaced
 currentTeam = [remainTeam, i0];
-%disp(currentTeam);
-%disp("check point 1");
 
 A1 = aa(currentTeam,currentTeam);
 A1 = (triu(A1,1) + tril(A1,-1));  % remove diagonal elements
@@ -96,6 +93,7 @@ c=0.001;
 dn=length(L);
 
 score = zeros(length(cand), 2);
+result_max = zeros(length(cand), 2);
 edge_weight_matrix = zeros(length(cand), length(currentTeam));
 
 for i=1:length(cand)
@@ -111,6 +109,8 @@ for i=1:length(cand)
     score(i,2) = cand(i);
     edge_weight_matrix(i, length(A2)) = cand(i);
     result = inf_cal(A1,A2,LL,c);
+    result_max(i, 1) = max(result);
+    result_max(i, 2) = cand(i);
     edge_weight_matrix(i, 1:(length(A2)-1)) = result; 
 end
 
