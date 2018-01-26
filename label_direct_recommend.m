@@ -87,7 +87,7 @@ end
 %end
 
 % decay factor in RWR, set it so that it converges
-c=0.001;
+c=0.00000001;
 
 % number of skills
 dn=length(L);
