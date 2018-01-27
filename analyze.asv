@@ -1,13 +1,3 @@
-%{
-This script showcases how to use the proposed team member replacement
-algorithms proposed in the WWW'15 paper:
-Liangyue Li, Hanghang Tong, Nan Cao, Kate Ehrlich, Yu-Ru Lin, Norbou Buchler. Replacing the Irreplaceable: 
-Fast Algorithm for Team Member Recommendation. International World Wide Web Conference (WWW), 2015.
-
-Author: Liangyue Li (Arizona State University)
-
-%}
-
 load DBLP;
 
 %smola 
@@ -20,7 +10,7 @@ load DBLP;
 
 %jiawei han_1
 currentTeam = [750967, 124372, 167178, 620387, 3603, 582475];
-i0 = 124372;
+i0 = 167178;%Peixiang Zhao
 
 %jiawei han_2
 %currentTeam = [37832, 785879, 721587, 124372, 260647];
@@ -52,18 +42,38 @@ fprintf('We need to replace %s ...\n', authorDict{i0});
 
 [score, edge_weight_matrix, edge_max] = label_direct_recommend(aa,L,currentTeam,i0,true);
 top6 = topsix(score);
-
 disp ('Using TEAMREP-BASIC after pruning, the top six candidates are:');
+
+A1 = aa(currentTeam, currentTeam);
+A1 = (triu(A1, 1) + tril(A1, -1));
+
+existingTeam = setdiff(currentTeam, i0, 'stable');
+top_cand_len = length(top6);
+dn = length(L);
+
+abs_old_cell = cell(1, top_cand_len);
+abs_new_cell = cell(1, top_cand_len);
+inf_old_cell = cell(1, top_cand_len);
+inf_new_cell = cell(1, top_cand_len);
+
+abs_time = zeros(1, top_cand_len);
+inf_time = zeros(1, top_cand_len);
+
+for i = 1:top_cand_len
+    newTeam = [exsitingTeam, authorDict(top6(i))];
+    LL = zeros(length(newTeam)^2);
+    for j = 1:dn
+        LL = LL + kron(L{j}(currentTeam, currentTeam), L{j}(newTeam, newTeam));
+    end
+    A2 = aa(newTeam, newTeam);
+    A2 = (triu(A2, 1) + tril(A2, -1));
+    
+    %abs_cell filling
+    [tmp_abs_old, tmp_abs_new, tmp_abs_time] = abs_sim(A1, A2, LL, c);
+    
+    %inf_cell filling
+    []
+    
+end
+
 fprintf('%s \n', authorDict{top6});
-
-
-%score = label_fast_exact(aa,L,currentTeam,i0,true);
-%top5 = topfive(score);
-%display 'Using TEAMREP-FAST-EXACT, the top five candidates are:';
-%fprintf('%s \n', authorDict{top5});
-
-
-%score = label_fast_approx(aa,L,currentTeam,i0,true,2);
-%top5 = topfive(score);
-%display 'Using TEAMREP-FAST-APPROX, the top five candidates are:';
-%fprintf('%s \n', authorDict{top5});
