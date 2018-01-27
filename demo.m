@@ -11,8 +11,8 @@ Author: Liangyue Li (Arizona State University)
 load DBLP;
 
 %smola 
-currentTeam = [916232, 250177, 219532, 545532, 756929]; %paper index
-i0= 250177;
+%currentTeam = [916232, 250177, 219532, 545532, 756929]; %paper index
+%i0= 250177;
 
 %hinton_1: 
 %currentTeam = [208818, 554802, 455386, 218580, 822000]; %paper index
