@@ -17,13 +17,16 @@ if nargin < 4
     prune = false;
 end
 
+%get author name with author id
 fileID=fopen('authorDict.txt');
 authorDict=textscan(fileID,'%s','delimiter','\n');
 authorDict=authorDict{1};
 
-%old team adjacency matrix
-%disp(size(aa));
+%expand current team for a incomplete graph
 l1 = length(currentTeam);
+disp(currentTeam);
+
+%old team adjacency matrix
 old_team_new = zeros([l1, l1]);
 old_team = aa(currentTeam, currentTeam);
 
@@ -46,20 +49,21 @@ for i = 1:l1
     end
 end
 
-disp(s);
-disp(t);
-disp(weights);
-disp(old_team_new);
+%disp(s);
+%disp(t);
+%disp(weights);
+%disp(old_team_new);
 %plot old team
 name_old = strings([1, l1]);
-    %node name
+
+%node name
 for i = 1:length(currentTeam)
     name_old(i) = string(authorDict{currentTeam(i)});
 end
 name_old = cellstr(name_old);
 G = graph(s, t, weights, name_old);
 LWidths = 5 * G.Edges.Weight / max(G.Edges.Weight);
-plot(G, 'EdgeLabel', G.Edges.Weight, 'LineWidth', LWidths);
+%plot(G, 'EdgeLabel', G.Edges.Weight, 'LineWidth', LWidths);
 
 n=size(aa,1);
 remainTeam = setdiff(currentTeam,i0,'stable'); %i0 is the index of author to be replaced
@@ -74,17 +78,7 @@ cand = setdiff((1:n),currentTeam,'stable'); % this is the set of candidates afte
 % prune those unpromising candidates
 if prune == true
     cand = cand(sum(aa(cand,remainTeam),2)>0);
-    %summ = sum(aa(cand,remainTeam),2);
-    %index = sum(aa(cand,remainTeam),2)>0; 
-    %save('aa_sum_filtered.mat', 'summ', 'cand', 'index');
 end
-
-%plot current team
-%G = graph(A1);
-%name_A1 = strings([1, length(A1)]);
-%for i = 1:length(current)
-%    name_A1(i) = string(authorDict{cand(i)});
-%end
 
 % decay factor in RWR, set it so that it converges
 c=0.00000001;
@@ -97,7 +91,7 @@ result_max = zeros(length(cand), 2);
 edge_weight_matrix = zeros(length(cand), length(currentTeam));
 
 for i=1:length(cand)
-    newTeam = [remainTeam,cand(i)];
+    newTeam = [remainTeam, cand(i)];
     LL = zeros(length(newTeam)^2);
     for j=1:dn
         LL = LL + kron(L{j}(currentTeam,currentTeam),L{j}(newTeam,newTeam));
@@ -114,57 +108,4 @@ for i=1:length(cand)
     edge_weight_matrix(i, 1:(length(A2)-1)) = result; 
 end
 
-end
-
-function sim = label_gs(A,B,L,c)
-% graph kernel computation for attributes graphs
-% input:
-%   A: first graph
-%   B: second graph
-%   L: label matrix
-%   c: decay factor
-% output:
-%   sim: similarity between A and B
-
-    n1 = size(A,1);
-    n2 = size(B,1);
-    q = {ones(n1,1)/n1,ones(n2,1)/n2};
-    p = {ones(n1,1)/n1,ones(n2,1)/n2};
-    p1 = p{1};
-    p2 = p{2};
-    q1 = q{1};
-    q2 = q{2};
-    
-    X = kron(A,B);
-    qx = kron(q1,q2);
-    px = kron(p1,p2);
-    sim = qx' * inv(eye(n1 * n2) - c * L * X) * L * px;
-end
-
-%graph kernel influcial score computation
-function sim_der = inf_cal(A, B, L, c)
-    n1 = size(A, 1);
-    n2 = size(B,1);
-    sim_der = zeros(1, n2 - 1);
-    
-    q = {ones(n1,1)/n1,ones(n2,1)/n2};
-    p = {ones(n1,1)/n1,ones(n2,1)/n2};
-    p1 = p{1};
-    p2 = p{2};
-    q1 = q{1};
-    q2 = q{2};
-    qx = kron(q1, q2);
-    px = kron(p1, p2);
-    Wx = kron(A, B);
-    inv_part = inv(eye(n1 * n2) - c * L * Wx);
-    first_part = qx' * inv_part * c * L;
-    second_part = inv_part * L * px;
-    for i = 1 : (n2 - 1)
-        tmp = zeros(n2, n2);
-        tmp(n2, i) = 1;
-        tmp(i, n2) = 1;
-        core = kron(A, tmp);
-        sim_der(1, i) = first_part * core * second_part;
-    end
-    %disp("sim_der size " + size(sim_der));
 end

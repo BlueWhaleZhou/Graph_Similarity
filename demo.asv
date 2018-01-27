@@ -20,7 +20,7 @@ load DBLP;
 
 %jiawei han_1
 currentTeam = [750967, 124372, 167178, 620387, 3603, 582475];
-i0 = 124372;
+i0 = 167178;%Peixiang Zhao
 
 %jiawei han_2
 %currentTeam = [37832, 785879, 721587, 124372, 260647];
@@ -51,10 +51,9 @@ authorDict=authorDict{1};
 fprintf('We need to replace %s ...\n', authorDict{i0});
 
 [score, edge_weight_matrix, edge_max] = label_direct_recommend(aa,L,currentTeam,i0,true);
-top6 = topsix(score);
-
-disp ('Using TEAMREP-BASIC after pruning, the top six candidates are:');
-fprintf('%s \n', authorDict{top6});
+top10 = topten(score);
+disp ('Using TEAMREP-BASIC after pruning, the top ten candidates are:');
+fprintf('%s \n', authorDict{top10});
 
 
 %score = label_fast_exact(aa,L,currentTeam,i0,true);
